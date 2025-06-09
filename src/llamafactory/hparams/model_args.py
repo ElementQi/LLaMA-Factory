@@ -405,6 +405,10 @@ class ModelArguments(
         init=False,
         metadata={"help": "Whether use block diag attention or not, derived from `neat_packing`. Do not specify it."},
     )
+    # use_streambp: bool = field(
+    #     default=False,
+    #     metadata={"help": "Whether or not to use the StreamBP. This will wrap the model"},
+    # )
 
     def __post_init__(self):
         BaseModelArguments.__post_init__(self)

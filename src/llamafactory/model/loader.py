@@ -175,6 +175,18 @@ def load_model(
         patch_model(model, tokenizer, model_args, is_trainable, add_valuehead)
         register_autoclass(config, model, tokenizer)
 
+    # if model_args.use_streambp:
+    #     from streambp import StreamModel
+    #     # TODO: check if the model is compatible with StreamBP
+    #     # TODO: add params like `stream_checkpoint` and `checkpoint_chunk_size`
+    #     model = StreamModel(
+    #         model=model,
+    #         logits_chunk_size=100, # Partition size of logits
+    #         stream_checkpoint=True, # If it's False, only the logits will be partitioned
+    #         checkpoint_chunk_size=2000, # Suggested value: sequence_len/3
+    #         gradient_accumulation_steps=finetuning_args.gradient_accumulation_steps,
+    #         )
+
     model = init_adapter(config, model, model_args, finetuning_args, is_trainable)
 
     if add_valuehead:

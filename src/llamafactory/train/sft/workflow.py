@@ -78,6 +78,25 @@ def run_sft(
     gen_kwargs["eos_token_id"] = [tokenizer.eos_token_id] + tokenizer.additional_special_tokens_ids
     gen_kwargs["pad_token_id"] = tokenizer.pad_token_id
 
+    # since the gradient accumulation num is inside `training_args`
+    # `training_args` is not plugged into the `load_model`
+    # we wrap the StreamBP model here for test
+    # but in official codebase, the adapter init is after the model is wrapped
+
+    # if model_args.use_streambp:
+    if finetuning_args.use_streambp:
+        from streambp import StreamModel
+        # TODO: check if the model is compatible with StreamBP
+        # TODO: add params like `stream_checkpoint` and `checkpoint_chunk_size`
+        model = StreamModel(
+            model=model,
+            logits_chunk_size=100, # Partition size of logits
+            stream_checkpoint=True, # If it's False, only the logits will be partitioned
+            checkpoint_chunk_size=2000, # Suggested value: sequence_len/3
+            gradient_accumulation_steps=training_args.gradient_accumulation_steps,
+            )
+        logger.info_rank0("Using StreamBP model for training.")
+
     # Initialize our Trainer
     trainer = CustomSeq2SeqTrainer(
         model=model,

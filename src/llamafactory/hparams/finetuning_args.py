@@ -415,6 +415,10 @@ class FinetuningArguments(
         default=False,
         metadata={"help": "Whether or not to use the Muon optimizer."},
     )
+    use_streambp: bool = field(
+        default=False,
+        metadata={"help": "Whether or not to use the StreamBP. This will wrap the model"},
+    )
     freeze_vision_tower: bool = field(
         default=True,
         metadata={"help": "Whether ot not to freeze the vision tower in MLLM training."},
