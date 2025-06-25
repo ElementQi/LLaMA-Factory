@@ -61,21 +61,6 @@ class CustomSeq2SeqTrainer(Seq2SeqTrainer):
         super().__init__(**kwargs)
 
         if finetuning_args.use_streambp:
-            # TODO: remove this, modify in StreamBP main code
-            # but the `model.state_dict()` is the wrapped one, not the original model
-            # to fix this, we should use `self.model.model.state_dict()` instead
-            # but if there are somewhere that use `self.model.state_dict()`, it will cause error
-            # this doesn't work as well, due to the
-
-            # hack for saving the model when trl.trainer._save is called
-            from transformers import PreTrainedModel
-            # create a new class that properly inherits from `PreTrainedModel`
-            if not isinstance(self.model, PreTrainedModel):
-                self.model.__class__ = type(
-                    self.model.model.__class__.__name__, # model config architecture name
-                    (self.model.__class__, PreTrainedModel), {}
-                )
-
             # backward is fused with forward, no need to call accelerator.backward
             self.accelerator.backward = lambda loss: None
 
